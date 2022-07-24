@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:hello/screens/home.dart';
 
-class Boat extends StatelessWidget {
-  const Boat({Key? key, this.text = "Enviar", this.onPressed=null}) : super(key: key);
+class Botao extends StatelessWidget {
+  const Botao({Key? key, this.text = "Enviar", this.onPressed}) : super(key: key);
 
   final String text;
-  final Function onPressed;
+  final void Function()? onPressed; // Good
 
   @override
   Widget build(BuildContext context) {
