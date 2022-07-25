@@ -3,9 +3,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hello/components/form_repository.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:hello/components/botao.dart';
 import 'package:hello/models/repository.dart';
 import 'package:hello/components/list_repository.dart';
 
@@ -17,17 +17,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var _texto = "Hello World";
   var _repositories = new List<Repository>.empty();
+  var _loading = false;
 
-  @override
-  void initState() => _texto = "Apps init state";
+  Future<void> searchRepositories(String repo) async {
+    if (_loading) return;
 
-  Future<void> searchRepositories() async {
+    setState(() {
+      _loading = true;
+    });
+
     final response = await http.get(Uri.parse(
-        'https://api.github.com/search/repositories?q=flutter&page=0&per_page=10'));
+        'https://api.github.com/search/repositories?q=$repo&page=0&per_page=10'));
     var data = jsonDecode(response.body);
     setState(() {
+      _loading = false;
       _repositories =
           (data['items'] as List).map((e) => Repository.fromJson(e)).toList();
       _repositories.forEach((element) {
@@ -47,13 +51,9 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.all(10.0),
         child: Column(
           children: <Widget>[
-            Text(
-              _texto,
-              style: TextStyle(fontSize: 24.0),
-            ),
-            Botao(
-              onPressed: searchRepositories,
-              text: "Clica aqui",
+            FormRepository(
+              onSearch: searchRepositories,
+              loading: _loading,
             ),
             Expanded(
               child: ListRepository(
